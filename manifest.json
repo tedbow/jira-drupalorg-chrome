@@ -6,6 +6,7 @@
   "background": {
     "service_worker": "background.js"
   },
+  "host_permissions": ["https://backlog.acquia.com/rest/*"],
   "content_scripts": [
     {
       "matches": ["https://www.drupal.org/*"],
