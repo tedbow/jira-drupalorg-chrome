@@ -87,7 +87,7 @@ function updatePlaceHoldersForIssue(jiraIssue) {
     link = document.createElement("a");
     link.setAttribute("href", jiraIssue.url);
     link.title = "Open in Jira";
-    link.innerText = `Jira - ${jiraIssue.key}`;
+    link.innerText = `Jira: ${jiraIssue.key}`;
     if (jiraIssue.assigned) {
       link.innerText += ` - assigned ${jiraIssue.assigned.displayName}`;
     } else {
