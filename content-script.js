@@ -1,4 +1,3 @@
-
 var tabs = document.getElementById('tabs');
 var issueIds = [];
 var pageIssueId;
@@ -33,7 +32,7 @@ var links = document.querySelectorAll('a');
 links.forEach(function (link){
     var href = link.href;
     var regex = /\/project\/.*\/issues\/.*/g;
-    if (href.match(regex)) {
+    if (href.match(regex) && !href.includes('#new')) {
         var issueId = getIssueIdFromUrl(href);
         if (issueId === pageIssueId) {
             // Don't affect links to the current page.
@@ -60,7 +59,7 @@ function createJiraLinks(issueIds) {
             div.className += ' jira-issue-found';
             div.innerText = '';
             link = document.createElement('a');
-            link.setAttribute('href', 'https://backlog.acquia.com/secure/CloneIssueDetails!default.jspa?id=12348176');
+            link.setAttribute('href', jiraConfig.jira_create_url);
             link.title = 'Create a Jira issue for this drupal.org issue';
             link.innerText = 'Create a Jira issue';
             div.appendChild(link);

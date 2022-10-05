@@ -1,5 +1,5 @@
 // background.js
-import './utils.js';
+import {jiraConfig}  from './background-config.js';
 // why isn't the import working?
 function getIssueIdFromUrl(url) {
     let parts = url.split('/');
@@ -52,7 +52,7 @@ chrome.runtime.onMessage.addListener(
             "from a content script:" + sender.tab.url :
             "from the extension");
         if (request.call === "fetchIssue") {
-            let url = "https://backlog.acquia.com/rest/api/2/search?jql="
+            let url = jiraConfig.jira_rest_url;
             let searchFragments = [];
             request.issueIds.forEach(function (issueId){
                 searchFragments.push(`description~%22issues/${issueId}%22`)
