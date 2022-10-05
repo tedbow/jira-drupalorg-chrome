@@ -55,12 +55,26 @@ function handleError(error) {
     console.log(`Error: ${error}`);
 }
 function createJiraLinks(issueIds) {
+    function createJiraCreateIssueLinks() {
+        document.querySelectorAll( '.jira-issue:not(.jira-issue-found)' ).forEach(function (div) {
+            div.className += ' jira-issue-found';
+            div.innerText = '';
+            link = document.createElement('a');
+            link.setAttribute('href', 'https://backlog.acquia.com/secure/CloneIssueDetails!default.jspa?id=12348176');
+            link.title = 'Create a Jira issue for this drupal.org issue';
+            link.innerText = 'Create a Jira issue';
+            div.appendChild(link);
+        });
+
+    }
+
     return new Promise(function () {
         // Send all issue ids on the page in 1 call.
         chrome.runtime.sendMessage({call: 'fetchIssue', issueIds: issueIds}, function(response) {
             response.issues.forEach(function (issue) {
                 updatePlaceHoldersForIssue(issue);
             });
+            createJiraCreateIssueLinks();
         });
     }, handleError);
 }
@@ -69,6 +83,7 @@ function updatePlaceHoldersForIssue (jiraIssue){
     issueId = jiraIssue.drupalIssueId;
     var divs = document.getElementsByClassName(`jira-issue-${issueId}`);
     [].forEach.call(divs, function (div) {
+        div.className += ' jira-issue-found';
         link = document.createElement('a');
         link.setAttribute('href', jiraIssue.url);
         link.title = 'Open in Jira'
