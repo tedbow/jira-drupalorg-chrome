@@ -28,7 +28,6 @@ if (tabs) {
             issueIds.push(issueId);
             node.appendChild(createPlaceHolder(issueId));
             tabList.appendChild(node);
-            getJiraIssue(issueId, updateMainJiraLink)
         }
     }
 }
@@ -38,7 +37,13 @@ links.forEach(function (link){
     var href = link.href;
     var regex = /\/project\/.*\/issues\/.*/g;
     if (href.match(regex)) {
-        link.innerText += '***';
+        var issueId = getIssueIdFromUrl(href);
+        if (issueIds.includes(issueId)) {
+            return;
+        }
+        issueIds.push(issueId);
+        var placeHolder = createPlaceHolder(issueId);
+        link.append(placeHolder);
     }
 });
 
