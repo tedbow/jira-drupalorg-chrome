@@ -1,6 +1,6 @@
 // background.js
 import './utils.js';
-let color = '#3aa757';
+// why isn't the import working?
 function getIssueIdFromUrl(url) {
     let parts = url.split('/');
     let lastPart = parts[parts.length - 1];
@@ -8,15 +8,6 @@ function getIssueIdFromUrl(url) {
     return parts[0];
 }
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.sync.set({ color });
-    console.log('Default background color set to %cgreen', `color: ${color}`);
-});
-
-chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
-    if (changeInfo.status === 'complete') {
-    }
-})
 
 function findDrupalIssueId(issue) {
     let description = issue.fields.description;
@@ -70,11 +61,10 @@ chrome.runtime.onMessage.addListener(
             fetch(url)
                 .then(response => response.text())
                 .then(text => sendResponse({issues: parseIssueJson(text)}))
-                //.then(price => sendResponse(price))
+                // @todo handle error.
                 .catch(error => sendResponse({farewell: error}));
 
             return true; // Will respond asynchronously.
-            sendResponse({farewell: `id = ${request.issue_id}`});
         }
 
     }

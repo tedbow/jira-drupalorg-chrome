@@ -10,6 +10,7 @@ function createPlaceHolder(issueId) {
 
 }
 
+// Add placeholder for tabs section
 if (tabs) {
     var tabLists = tabs.getElementsByTagName('ul');
     if (tabLists) {
@@ -28,6 +29,7 @@ if (tabs) {
 }
 var links = document.querySelectorAll('a');
 
+// Add placeholder for all other issue links
 links.forEach(function (link){
     var href = link.href;
     var regex = /\/project\/.*\/issues\/.*/g;
@@ -49,24 +51,21 @@ links.forEach(function (link){
 
 
 
-//node.appendChild(document.createTextNode(issueId));
-
-
-
 function handleError(error) {
     console.log(`Error: ${error}`);
 }
 function createJiraLinks(issueIds) {
     return new Promise(function () {
+        // Send all issue ids on the page in 1 call.
         chrome.runtime.sendMessage({call: 'fetchIssue', issueIds: issueIds}, function(response) {
             response.issues.forEach(function (issue) {
-                updateMainJiraLink(issue);
+                updatePlaceHoldersForIssue(issue);
             });
         });
     }, handleError);
 }
 
-function updateMainJiraLink (jiraIssue){
+function updatePlaceHoldersForIssue (jiraIssue){
     issueId = jiraIssue.drupalIssueId;
     var divs = document.getElementsByClassName(`jira-issue-${issueId}`);
     [].forEach.call(divs, function (div) {
