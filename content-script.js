@@ -1,5 +1,21 @@
 
 var tabs = document.getElementById('tabs');
+var issueIds = [];
+function createPlaceHolder(issueId) {
+    var div = document.createElement('div');
+    div.className = `jira-issue jira-issue-${issueId}`;
+    div.innerText = "⏱";
+    return div;
+
+}
+
+function getIssueIdFromUrl(url) {
+    var parts = url.split('/');
+    var lastPart = parts[parts.length - 1];
+    parts = lastPart.split('#');
+    return parts[0];
+}
+
 if (tabs) {
     var tabLists = tabs.getElementsByTagName('ul');
     if (tabLists) {
@@ -8,18 +24,9 @@ if (tabs) {
         var url = document.URL
         const regex = /https:\/\/www\.drupal\.org\/project\/automatic_updates\/issues\/.*/g;
         if (url.match(regex)) {
-            var parts = url.split('/');
-            var lastPart = parts[parts.length - 1];
-            parts = lastPart.split('#');
-            var issueId = parts[0];
-            var jiraLink = document.createElement('a');
-            var linkText = document.createTextNode("Find in jira");
-            jiraLink.appendChild(linkText);
-            jiraLink.title = "Search in jira";
-            var search = `issues/${issueId}`;
-            jiraLink.id = `jira-link-${issueId}`;
-            jiraLink.href = `https://backlog.acquia.com/issues/?jql=text%20~%20%22${search}%22`;
-            node.appendChild(jiraLink);
+            var issueId = getIssueIdFromUrl(url);
+            issueIds.push(issueId);
+            node.appendChild(createPlaceHolder(issueId));
             tabList.appendChild(node);
             getJiraIssue(issueId, updateMainJiraLink)
         }
@@ -55,17 +62,22 @@ function getJiraIssue(drupalIssueId, callback) {
 }
 
 function updateMainJiraLink (jiraIssue){
-    var link = document.getElementById(`jira-link-${issueId}`);
-    link.setAttribute('href', jiraIssue.url);
-    link.title = 'Open in Jira'
-    link.innerText = `Jira - ${jiraIssue.key}`;
-    if (jiraIssue.assigned) {
-        link.innerText += ` - assigned ${jiraIssue.assigned.displayName}`;
-    }
-    else {
-        link.innerText += ` - unassigned`;
-    }
-    jiraLink.href = jiraIssue.url;
+    var divs = document.getElementsByClassName(`jira-issue-${issueId}`);
+    [].forEach.call(divs, function (div) {
+        link = document.createElement('a');
+        link.setAttribute('href', jiraIssue.url);
+        link.title = 'Open in Jira'
+        link.innerText = `Jira - ${jiraIssue.key}`;
+        if (jiraIssue.assigned) {
+            link.innerText += ` - assigned ${jiraIssue.assigned.displayName}`;
+        }
+        else {
+            link.innerText += ` - unassigned`;
+        }
+        div.innerText = '';
+        div.appendChild(link);
+    });
+
 }
 
 

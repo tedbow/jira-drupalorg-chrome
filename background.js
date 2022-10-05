@@ -13,13 +13,14 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
         alert("dhw");
     }
 })
-function parseIssueJson(text) {
+function parseIssueJson(text, issueId) {
   data = JSON.parse(text);
   issues = data.issues;
   issueCnt = issues.length;
   var response = {issueCnt: issueCnt};
   if (issueCnt === 1) {
       issue = issues[0];
+      response.issueId = issueId;
       response.url = `https://backlog.acquia.com/browse/${issue.key}`
       response.key = issue.key;
       response.assigned = issue.fields.assignee;
@@ -36,7 +37,7 @@ chrome.runtime.onMessage.addListener(
             var url = `https://backlog.acquia.com/rest/api/2/search?jql=description~%22issues/${request.issue_id}%22`;
             fetch(url)
                 .then(response => response.text())
-                .then(text => sendResponse({issue: parseIssueJson(text)}))
+                .then(text => sendResponse({issue: parseIssueJson(text, request.issue_id)}))
                 //.then(price => sendResponse(price))
                 .catch(error => sendResponse({farewell: error}));
 
