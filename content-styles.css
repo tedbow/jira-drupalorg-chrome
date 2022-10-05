@@ -1,0 +1,5 @@
+div.jira-issue a {
+    text-decoration: none !important;
+    border:1px solid;
+    background-color: white;
+}

@@ -1,19 +1,13 @@
 
 var tabs = document.getElementById('tabs');
 var issueIds = [];
+var pageIssueId;
 function createPlaceHolder(issueId) {
     var div = document.createElement('div');
     div.className = `jira-issue jira-issue-${issueId}`;
     div.innerText = "⏱";
     return div;
 
-}
-
-function getIssueIdFromUrl(url) {
-    var parts = url.split('/');
-    var lastPart = parts[parts.length - 1];
-    parts = lastPart.split('#');
-    return parts[0];
 }
 
 if (tabs) {
@@ -25,6 +19,7 @@ if (tabs) {
         const regex = /https:\/\/www\.drupal\.org\/project\/automatic_updates\/issues\/.*/g;
         if (url.match(regex)) {
             var issueId = getIssueIdFromUrl(url);
+            pageIssueId = issueId;
             issueIds.push(issueId);
             node.appendChild(createPlaceHolder(issueId));
             tabList.appendChild(node);
@@ -38,12 +33,17 @@ links.forEach(function (link){
     var regex = /\/project\/.*\/issues\/.*/g;
     if (href.match(regex)) {
         var issueId = getIssueIdFromUrl(href);
+        if (issueId === pageIssueId) {
+            // Don't affect links to the current page.
+            return;
+        }
+        var placeHolder = createPlaceHolder(issueId);
+        link.parentElement.appendChild(placeHolder);
         if (issueIds.includes(issueId)) {
             return;
         }
         issueIds.push(issueId);
-        var placeHolder = createPlaceHolder(issueId);
-        link.append(placeHolder);
+
     }
 });
 
@@ -56,17 +56,18 @@ links.forEach(function (link){
 function handleError(error) {
     console.log(`Error: ${error}`);
 }
-function getJiraIssue(drupalIssueId, callback) {
+function createJiraLinks(issueIds) {
     return new Promise(function () {
-        chrome.runtime.sendMessage({call: 'fetchIssue', issue_id: issueId}, function(response) {
-            if (response.issue.issueCnt === 1) {
-                callback(response.issue);
-            }
+        chrome.runtime.sendMessage({call: 'fetchIssue', issueIds: issueIds}, function(response) {
+            response.issues.forEach(function (issue) {
+                updateMainJiraLink(issue);
+            });
         });
     }, handleError);
 }
 
 function updateMainJiraLink (jiraIssue){
+    issueId = jiraIssue.drupalIssueId;
     var divs = document.getElementsByClassName(`jira-issue-${issueId}`);
     [].forEach.call(divs, function (div) {
         link = document.createElement('a');
@@ -84,6 +85,7 @@ function updateMainJiraLink (jiraIssue){
     });
 
 }
+createJiraLinks(issueIds);
 
 
 
