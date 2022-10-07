@@ -6,7 +6,7 @@ function findDrupalIssueId(issue) {
   const regex = /https:\/\/www\.drupal\.org\/project\/.*\/issues\/\d*/g;
   let matches = description.match(regex);
 
-  if (matches.length > 0) {
+  if (matches && matches.length > 0) {
     let issueId;
     matches.forEach(function (match) {
       issueId = utils.getIssueIdFromUrl(match);
@@ -26,18 +26,23 @@ function parseIssueJson(text) {
   let issues = decoded.issues;
   let newIssues = [];
   issues.forEach(function (issue) {
-    let newIssue = {};
-    newIssue.url = `${jiraConfig.jira_base_url}browse/${issue.key}`;
-    newIssue.id = issue.id;
-    newIssue.key = issue.key;
-    newIssue.assigned = issue.fields.assignee;
-    const drupalId = findDrupalIssueId(issue);
-    if (drupalId) {
-      newIssue.drupalIssueId = drupalId;
-      newIssue.drupalUrl = `https://www.drupal.org/i/${drupalId}`;
+    try {
+      let newIssue = {};
+      newIssue.url = `${jiraConfig.jira_base_url}browse/${issue.key}`;
+      newIssue.id = issue.id;
+      newIssue.key = issue.key;
+      newIssue.assigned = issue.fields.assignee;
+      const drupalId = findDrupalIssueId(issue);
+      if (drupalId) {
+        newIssue.drupalIssueId = drupalId;
+        newIssue.drupalUrl = `https://www.drupal.org/i/${drupalId}`;
+      }
+      newIssues.push(newIssue);
+    }
+    catch (error) {
+      console.error(error);
     }
 
-    newIssues.push(newIssue);
   });
   return newIssues;
 }
@@ -70,6 +75,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       searchFragments.push(`id=${id}`);
     });
     url += searchFragments.join(" or ");
-    fetchJson(url, sendResponse)
+    fetchJson(url, sendResponse);
+    return true;
   }
 });

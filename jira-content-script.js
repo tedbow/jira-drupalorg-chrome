@@ -26,11 +26,13 @@
                     link.setAttribute("href", issue.drupalUrl);
                     link.title = "Open on Drupal.org";
                     link.innerText = `Open on Drupal.org`;
+                    div.after(link);
                 }
 
             });
         }
 
+        // Send all issue ids on the page in 1 call.
         chrome.runtime.sendMessage(
             { call: "fetchJIraIssuesByIds", ids: ids },
             function (response) {
