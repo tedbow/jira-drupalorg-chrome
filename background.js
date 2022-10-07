@@ -35,25 +35,35 @@ function parseIssueJson(text) {
   });
   return newIssues;
 }
+function fetchJson(url, sendResponse) {
+  fetch(url)
+      .then((response) => response.text())
+      .then((text) => sendResponse({ issues: parseIssueJson(text) }))
+      // @todo handle error.
+      .catch((error) => sendResponse({ farewell: error }));
+}
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log(
     sender.tab
       ? "from a content script:" + sender.tab.url
       : "from the extension"
   );
+  let url = `${jiraConfig.jira_base_url}rest/api/2/search?jql=`;
   if (request.call === "fetchJIraIssuesByDrupalIds") {
-    let url = `${jiraConfig.jira_base_url}rest/api/2/search?jql=`;
     let searchFragments = [];
     request.issueIds.forEach(function (issueId) {
       searchFragments.push(`description~%22issues/${issueId}%22`);
     });
     url += searchFragments.join(" or ");
-    fetch(url)
-      .then((response) => response.text())
-      .then((text) => sendResponse({ issues: parseIssueJson(text) }))
-      // @todo handle error.
-      .catch((error) => sendResponse({ farewell: error }));
-
+    fetchJson(url, sendResponse)
     return true; // Will respond asynchronously.
+  }
+  if (request.call === "fetchJIraIssuesByKeys") {
+    let searchFragments = [];
+    request.keys.forEach(function (key) {
+      searchFragments.push(`key=${key}`);
+    });
+    url += searchFragments.join(" or ");
+    fetchJson(url, sendResponse)
   }
 });
