@@ -28,9 +28,15 @@ function parseIssueJson(text) {
   issues.forEach(function (issue) {
     let newIssue = {};
     newIssue.url = `${jiraConfig.jira_base_url}browse/${issue.key}`;
+    newIssue.id = issue.id;
     newIssue.key = issue.key;
     newIssue.assigned = issue.fields.assignee;
-    newIssue.drupalIssueId = findDrupalIssueId(issue);
+    const drupalId = findDrupalIssueId(issue);
+    if (drupalId) {
+      newIssue.drupalIssueId = drupalId;
+      newIssue.drupalUrl = `https://www.drupal.org/i/${drupalId}`;
+    }
+
     newIssues.push(newIssue);
   });
   return newIssues;
@@ -58,10 +64,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     fetchJson(url, sendResponse)
     return true; // Will respond asynchronously.
   }
-  if (request.call === "fetchJIraIssuesByKeys") {
+  if (request.call === "fetchJIraIssuesByIds") {
     let searchFragments = [];
-    request.keys.forEach(function (key) {
-      searchFragments.push(`key=${key}`);
+    request.ids.forEach(function (id) {
+      searchFragments.push(`id=${id}`);
     });
     url += searchFragments.join(" or ");
     fetchJson(url, sendResponse)

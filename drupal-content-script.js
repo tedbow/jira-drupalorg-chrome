@@ -89,7 +89,7 @@
     var divs = document.getElementsByClassName(`jira-issue-${issueId}`);
     [].forEach.call(divs, function (div) {
       div.className += " jira-issue-found";
-      link = document.createElement("a");
+      let link = document.createElement("a");
       link.setAttribute("href", jiraIssue.url);
       link.title = "Open in Jira";
       link.innerText = `Jira: ${jiraIssue.key}`;
