@@ -36,6 +36,7 @@ function parseJiraIssuesJson(text) {
       if (drupalId) {
         newIssue.drupalIssueId = drupalId;
         newIssue.drupalUrl = `https://www.drupal.org/i/${drupalId}`;
+
       }
       newIssues.push(newIssue);
     }
@@ -53,6 +54,22 @@ function fetchJson(url, parser, sendResponse) {
       // @todo handle error.
       .catch((error) => sendResponse({ farewell: error }));
 }
+function combineDrupalJira(drupalOrgIssues, jiraIssues) {
+ return jiraIssues.map(jiraIssue => {
+   if(jiraIssue.hasOwnProperty('drupalIssueId')) {
+     drupalOrgIssues.every(drupalOrgIssue => {
+       if (drupalOrgIssue.nid === jiraIssue.drupalIssueId) {
+         // convert to text.
+         jiraIssue.drupalStatus = drupalOrgIssue.field_issue_status;
+         return false;
+       }
+       return true;
+     })
+
+   }
+   return jiraIssue;
+ });
+}
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log(
     sender.tab
@@ -66,7 +83,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       searchFragments.push(`description~%22issues/${issueId}%22`);
     });
     url += searchFragments.join(" or ");
-    fetchJson(url, parseJiraIssuesJson, sendResponse)
+    fetch(url)
+        .then((response) => response.text())
+        .then((text) => parseJiraIssuesJson(text))
+        .then((issues) => sendResponse({issues: issues}));
+
     return true; // Will respond asynchronously.
   }
   if (request.call === "fetchJIraIssuesByIds") {
@@ -75,7 +96,35 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       searchFragments.push(`id=${id}`);
     });
     url += searchFragments.join(" or ");
-    fetchJson(url, parseJiraIssuesJson, sendResponse);
+    let jiraIssues;
+    fetch(url)
+        .then((response) => response.text())
+        .then((text) => parseJiraIssuesJson(text))
+        .then(issues => {
+          jiraIssues = issues;
+          return issues;
+        })
+        .then((issues) => Promise.all(
+            issues.map(
+                issue => fetch(`https://www.drupal.org/api-d7/node/${issue.drupalIssueId}.json`)
+            )
+        ))
+        //.then((promises) => promises.map(promise => promise.then((response) => response.text())))
+        .then(
+            (promises) => Promise.all(promises.map(response => response.text()))
+        )
+        .then(drupalTexts => drupalTexts.map(drupalText => {
+          try {
+            return JSON.parse(drupalText);
+          }
+          catch (e) {
+            return false;
+          }
+        }).filter(decoded => decoded !== false))
+        .then(
+            (drupalIssues => combineDrupalJira(drupalIssues, jiraIssues))
+        )
+        .then((issues) => sendResponse({issues: issues}));
     return true;
   }
 });

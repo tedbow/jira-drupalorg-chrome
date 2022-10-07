@@ -26,6 +26,9 @@
                     link.setAttribute("href", issue.drupalUrl);
                     link.title = "Open on Drupal.org";
                     link.innerText = `Open on Drupal.org`;
+                    if(issue.hasOwnProperty('drupalStatus')) {
+                        link.innerText += `: ${issue.drupalStatus}`;
+                    }
                     div.after(link);
                 }
 
