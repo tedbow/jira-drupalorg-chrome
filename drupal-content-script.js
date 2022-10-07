@@ -69,8 +69,7 @@
             div.appendChild(link);
           });
     }
-
-    return new Promise(function () {
+    
       // Send all issue ids on the page in 1 call.
       chrome.runtime.sendMessage(
           { call: "fetchJIraIssuesByDrupalIds", issueIds: issueIds },
@@ -81,7 +80,6 @@
             createJiraCreateIssueLinks();
           }
       );
-    }, handleError);
   }
 
   function updatePlaceHoldersForIssue(jiraIssue) {
