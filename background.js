@@ -15,7 +15,7 @@ function findDrupalIssueId(issue) {
   }
 }
 
-function parseIssueJson(text) {
+function parseJiraIssuesJson(text) {
   let decoded;
   try {
     decoded = JSON.parse(text);
@@ -46,10 +46,10 @@ function parseIssueJson(text) {
   });
   return newIssues;
 }
-function fetchJson(url, sendResponse) {
+function fetchJson(url, parser, sendResponse) {
   fetch(url)
       .then((response) => response.text())
-      .then((text) => sendResponse({ issues: parseIssueJson(text) }))
+      .then((text) => sendResponse({ issues: parser(text) }))
       // @todo handle error.
       .catch((error) => sendResponse({ farewell: error }));
 }
@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       searchFragments.push(`description~%22issues/${issueId}%22`);
     });
     url += searchFragments.join(" or ");
-    fetchJson(url, sendResponse)
+    fetchJson(url, parseJiraIssuesJson, sendResponse)
     return true; // Will respond asynchronously.
   }
   if (request.call === "fetchJIraIssuesByIds") {
@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       searchFragments.push(`id=${id}`);
     });
     url += searchFragments.join(" or ");
-    fetchJson(url, sendResponse);
+    fetchJson(url, parseJiraIssuesJson, sendResponse);
     return true;
   }
 });

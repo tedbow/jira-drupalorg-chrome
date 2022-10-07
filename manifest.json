@@ -7,7 +7,7 @@
     "type": "module",
     "service_worker": "background.js"
   },
-  "host_permissions": ["https://backlog.acquia.com/rest/*"],
+  "host_permissions": ["https://backlog.acquia.com/rest/*", "https://www.drupal.org/api-d7/*"],
   "content_scripts": [
     {
       "type": "module",
