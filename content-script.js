@@ -31,8 +31,8 @@ var links = document.querySelectorAll("a");
 // Add placeholder for all other issue links
 links.forEach(function (link) {
   var href = link.href;
-  var regex = /\/project\/.*\/issues\/.*/g;
-  if (href.match(regex) && !href.includes("#new")) {
+  var regex = /\/project\/.*\/issues\/\d*/g;
+  if (href.match(regex) && !href.includes("#")) {
     var issueId = getIssueIdFromUrl(href);
     if (issueId === pageIssueId) {
       // Don't affect links to the current page.
