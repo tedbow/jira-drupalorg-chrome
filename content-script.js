@@ -63,7 +63,7 @@
             div.className += " jira-issue-found";
             div.innerText = "";
             link = document.createElement("a");
-            link.setAttribute("href", main.jiraConfig.jira_create_url);
+            link.setAttribute("href", jiraConfig.jira_create_url);
             link.title = "Create a Jira issue for this drupal.org issue";
             link.innerText = "Create a Jira issue";
             div.appendChild(link);

@@ -1,5 +1,5 @@
 // background.js
-import {jiraConfig} from "./config.js";
+import { jiraConfig } from "./config.js";
 // why isn't the import working?
 function getIssueIdFromUrl(url) {
   let parts = url.split("/");
