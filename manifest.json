@@ -18,7 +18,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [ "config.js" ],
+      "resources": [ "common.js" ],
       "matches": [ "https://backlog.acquia.com/*", "https://www.drupal.org/*"]
     }
   ],

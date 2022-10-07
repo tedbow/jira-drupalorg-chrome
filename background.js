@@ -1,5 +1,5 @@
 // background.js
-import { jiraConfig, utils } from "./config.js";
+import { jiraConfig, utils } from "./common.js";
 
 function findDrupalIssueId(issue) {
   let description = issue.fields.description;
