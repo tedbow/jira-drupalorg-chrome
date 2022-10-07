@@ -10,6 +10,7 @@
   "host_permissions": ["https://backlog.acquia.com/rest/*"],
   "content_scripts": [
     {
+      "type": "module",
       "matches": ["https://www.drupal.org/*"],
       "css": ["content-styles.css"],
       "js": ["config.js", "utils.js", "content-script.js"]
