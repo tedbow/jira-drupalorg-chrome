@@ -1,5 +1,5 @@
 // background.js
-import main from "./config.js";
+import {jiraConfig} from "./config.js";
 // why isn't the import working?
 function getIssueIdFromUrl(url) {
   let parts = url.split("/");
@@ -34,7 +34,7 @@ function parseIssueJson(text) {
   let newIssues = [];
   issues.forEach(function (issue) {
     let newIssue = {};
-    newIssue.url = `${main.config.jira_base_url}browse/${issue.key}`;
+    newIssue.url = `${jiraConfig.jira_base_url}browse/${issue.key}`;
     newIssue.key = issue.key;
     newIssue.assigned = issue.fields.assignee;
     newIssue.drupalIssueId = findDrupalIssueId(issue);
@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       : "from the extension"
   );
   if (request.call === "fetchJIraIssues") {
-    let url = `${main.config.jira_base_url}rest/api/2/search?jql=`;
+    let url = `${jiraConfig.jira_base_url}rest/api/2/search?jql=`;
     let searchFragments = [];
     request.issueIds.forEach(function (issueId) {
       searchFragments.push(`description~%22issues/${issueId}%22`);

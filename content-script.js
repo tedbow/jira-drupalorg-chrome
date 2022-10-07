@@ -1,6 +1,6 @@
 (async () => {
   const src = chrome.runtime.getURL("config.js");
-  const {jiraConfig} = await import(src);
+  const { jiraConfig } = await import(src);
 
 
   var tabs = document.getElementById("tabs");
