@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       ? "from a content script:" + sender.tab.url
       : "from the extension"
   );
-  if (request.call === "fetchJIraIssues") {
+  if (request.call === "fetchJIraIssuesByDrupalIds") {
     let url = `${jiraConfig.jira_base_url}rest/api/2/search?jql=`;
     let searchFragments = [];
     request.issueIds.forEach(function (issueId) {

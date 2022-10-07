@@ -13,7 +13,13 @@
       "type": "module",
       "matches": ["https://www.drupal.org/*"],
       "css": ["content-styles.css"],
-      "js": ["content-script.js"]
+      "js": ["drupal-content-script.js"]
+    },
+    {
+      "type": "module",
+      "matches": ["https://backlog.acquia.com/*"],
+      "css": ["content-styles.css"],
+      "js": ["jira-content-script.js"]
     }
   ],
   "web_accessible_resources": [

@@ -73,7 +73,7 @@
     return new Promise(function () {
       // Send all issue ids on the page in 1 call.
       chrome.runtime.sendMessage(
-          { call: "fetchJIraIssues", issueIds: issueIds },
+          { call: "fetchJIraIssuesByDrupalIds", issueIds: issueIds },
           function (response) {
             response.issues.forEach(function (issue) {
               updatePlaceHoldersForIssue(issue);
