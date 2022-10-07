@@ -1,6 +1,6 @@
 (async () => {
   const src = chrome.runtime.getURL("config.js");
-  const { jiraConfig } = await import(src);
+  const { jiraConfig, utils } = await import(src);
 
 
   var tabs = document.getElementById("tabs");
@@ -23,7 +23,7 @@
       const regex =
           /https:\/\/www\.drupal\.org\/project\/automatic_updates\/issues\/.*/g;
       if (url.match(regex)) {
-        var issueId = getIssueIdFromUrl(url);
+        var issueId = utils.getIssueIdFromUrl(url);
         pageIssueId = issueId;
         issueIds.push(issueId);
         node.appendChild(createPlaceHolder(issueId));
@@ -38,7 +38,7 @@
     var href = link.href;
     var regex = /\/project\/.*\/issues\/\d*/g;
     if (href.match(regex) && !href.includes("#")) {
-      var issueId = getIssueIdFromUrl(href);
+      var issueId = utils.getIssueIdFromUrl(href);
       if (issueId === pageIssueId) {
         // Don't affect links to the current page.
         return;

@@ -1,12 +1,5 @@
 // background.js
-import { jiraConfig } from "./config.js";
-// why isn't the import working?
-function getIssueIdFromUrl(url) {
-  let parts = url.split("/");
-  let lastPart = parts[parts.length - 1];
-  parts = lastPart.split("#");
-  return parts[0];
-}
+import { jiraConfig, utils } from "./config.js";
 
 function findDrupalIssueId(issue) {
   let description = issue.fields.description;
@@ -16,7 +9,7 @@ function findDrupalIssueId(issue) {
   if (matches.length > 0) {
     let issueId;
     matches.forEach(function (match) {
-      issueId = getIssueIdFromUrl(match);
+      issueId = utils.getIssueIdFromUrl(match);
     });
     return issueId;
   }

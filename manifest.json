@@ -13,7 +13,7 @@
       "type": "module",
       "matches": ["https://www.drupal.org/*"],
       "css": ["content-styles.css"],
-      "js": ["utils.js", "content-script.js"]
+      "js": ["content-script.js"]
     }
   ],
   "web_accessible_resources": [
