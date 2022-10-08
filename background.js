@@ -60,7 +60,7 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
      drupalOrgIssues.every(drupalOrgIssue => {
        if (drupalOrgIssue.nid === jiraIssue.drupalIssueId) {
          // convert to text.
-         jiraIssue.drupalStatus = drupalOrgIssue.field_issue_status;
+         jiraIssue.drupalStatus = utils.getStatusForId(drupalOrgIssue.field_issue_status);
          return false;
        }
        return true;
