@@ -105,7 +105,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           return issues;
         })
         .then((issues) => Promise.all(
-            issues.map(
+            issues.filter(
+                issue => issue.hasOwnProperty('drupalIssueId')
+            ).
+            map(
                 issue => fetch(`https://www.drupal.org/api-d7/node/${issue.drupalIssueId}.json`)
             )
         ))
