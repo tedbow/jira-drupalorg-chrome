@@ -55,12 +55,36 @@ function fetchJson(url, parser, sendResponse) {
       .catch((error) => sendResponse({ farewell: error }));
 }
 function combineDrupalJira(drupalOrgIssues, jiraIssues) {
- return jiraIssues.map(jiraIssue => {
+
+  // @todo Dynamically request user via json.
+  function getDrupalUserNameForUid(id) {
+    switch (id) {
+      case '3685163':
+        return 'kunal.sachdev';
+      case '205645':
+        return 'phenaproxima';
+      case '3685174':
+        return 'yash.rode';
+      case '3688861':
+        return 'Theresa.Grannum';
+      case '3685158':
+        return 'omkarpodey';
+      case '240860':
+        return 'tedbow';
+      default:
+        return 'Other';
+    }
+  }
+
+  return jiraIssues.map(jiraIssue => {
    if(jiraIssue.hasOwnProperty('drupalIssueId')) {
      drupalOrgIssues.every(drupalOrgIssue => {
        if (drupalOrgIssue.nid === jiraIssue.drupalIssueId) {
          // convert to text.
          jiraIssue.drupalStatus = utils.getStatusForId(drupalOrgIssue.field_issue_status);
+         if (drupalOrgIssue.hasOwnProperty('field_issue_assigned') && drupalOrgIssue.field_issue_assigned.hasOwnProperty('id')) {
+           jiraIssue.drupalUserName = getDrupalUserNameForUid(drupalOrgIssue.field_issue_assigned.id);
+         }
          return false;
        }
        return true;
