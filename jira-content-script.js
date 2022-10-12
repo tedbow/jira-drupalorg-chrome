@@ -6,7 +6,9 @@
     document.querySelectorAll('.aui-header-primary .aui-nav').forEach(function (el){
         const link = document.createElement('div');
         //link.setAttribute('href', '*');
-        link.innerText = "DRUPAL";
+        link.innerText = "drupal.org";
+        link.id = "drupal-org-trigger"
+        link.className = 'drupal-trigger-active'
         link.onclick = function() {triggerDrupalIntegration()};
         const li = document.createElement('li');
         li.appendChild(link);
@@ -15,6 +17,11 @@
 
 
     function triggerDrupalIntegration() {
+        const triggerElement = document.getElementById('drupal-org-trigger');
+        triggerElement.className = 'drupal-trigger-waiting';
+        const oldTriggerText = triggerElement.innerText;
+        triggerElement.innerText = '💧⏱....'
+        document.querySelectorAll('.drupal-issue-link').forEach(el => el.remove());
         let ids = [];
         document.querySelectorAll('div[data-issue-id]').forEach(function (div) {
             ids.push(div.getAttribute('data-issue-id'));
@@ -23,6 +30,7 @@
             document.querySelectorAll(`div[data-issue-id="${issue.id}"]`).forEach(function (div) {
                 if (issue.drupalUrl) {
                     let link = document.createElement("a");
+                    link.className = 'drupal-issue-link';
                     link.setAttribute("href", issue.drupalUrl);
                     link.title = "Open on Drupal.org";
                     link.innerText = `💧`;
@@ -38,6 +46,7 @@
             });
         }
 
+
         // Send all issue ids on the page in 1 call.
         chrome.runtime.sendMessage(
             { call: "fetchJIraIssuesByIds", ids: ids },
@@ -45,6 +54,8 @@
                 response.issues.forEach(function (issue) {
                     createDrupalLink(issue);
                 });
+                triggerElement.className = 'drupal-trigger-active';
+                triggerElement.innerText = oldTriggerText;
             }
         );
     }

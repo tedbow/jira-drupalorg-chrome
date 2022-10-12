@@ -3,3 +3,13 @@ div.jira-issue a {
   border: 1px solid;
   background-color: white;
 }
+#drupal-org-trigger {
+  cursor: pointer;
+  border:1px solid #CCC;
+  background: #29aae1;
+  padding: 3px;
+  box-shadow: 0 0 5px -1px white;
+}
+#drupal-org-trigger.drupal-trigger-waiting {
+
+}
