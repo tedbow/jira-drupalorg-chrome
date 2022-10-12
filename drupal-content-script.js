@@ -69,7 +69,7 @@
             div.appendChild(link);
           });
     }
-    
+
       // Send all issue ids on the page in 1 call.
       chrome.runtime.sendMessage(
           { call: "fetchJIraIssuesByDrupalIds", issueIds: issueIds },
@@ -96,6 +96,7 @@
       } else {
         link.innerText += ` - unassigned`;
       }
+      link.innerText += ` - ${jiraIssue.status}`;
       div.innerText = "";
       div.appendChild(link);
     });

@@ -32,6 +32,7 @@ function parseJiraIssuesJson(text) {
       newIssue.id = issue.id;
       newIssue.key = issue.key;
       newIssue.assigned = issue.fields.assignee;
+      newIssue.status = issue.fields.status.name;
       const drupalId = findDrupalIssueId(issue);
       if (drupalId) {
         newIssue.drupalIssueId = drupalId;
