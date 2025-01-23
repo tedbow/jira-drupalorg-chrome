@@ -3,16 +3,16 @@
     const { jiraConfig, utils } = await import(src);
 
     //.aui-header-primary .aui-nav
-    document.querySelectorAll('.aui-header-primary .aui-nav').forEach(function (el){
+    document.querySelectorAll('#ak-jira-navigation').forEach(function (el){
         const link = document.createElement('div');
         //link.setAttribute('href', '*');
         link.innerText = "drupal.org";
         link.id = "drupal-org-trigger"
         link.className = 'drupal-trigger-active'
         link.onclick = function() {triggerDrupalIntegration()};
-        const li = document.createElement('li');
-        li.appendChild(link);
-        el.appendChild(li);
+        const divE = document.createElement('div');
+        divE.appendChild(link);
+        el.appendChild(divE);
     });
 
 

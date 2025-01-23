@@ -7,7 +7,7 @@
     "type": "module",
     "service_worker": "background.js"
   },
-  "host_permissions": ["https://backlog.acquia.com/rest/*", "https://www.drupal.org/api-d7/*"],
+  "host_permissions": ["https://*.atlassian.net/rest/*", "https://www.drupal.org/api-d7/*"],
   "content_scripts": [
     {
       "type": "module",
@@ -17,15 +17,15 @@
     },
     {
       "type": "module",
-      "matches": ["https://backlog.acquia.com/*"],
+      "matches": ["https://*.atlassian.net/*"],
       "css": ["content-styles.css"],
       "js": ["jira-content-script.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [ "common.js" ],
-      "matches": [ "https://backlog.acquia.com/*", "https://www.drupal.org/*"]
+      "resources": [ "common.js", "jira-content-script.js" ],
+      "matches": [ "https://*.atlassian.net/*", "https://www.drupal.org/*"]
     }
   ],
   "permissions": ["storage", "activeTab", "scripting"],
