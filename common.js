@@ -1,8 +1,3 @@
-const jiraConfig = {
-  "jira_create_url":
-    "https://not-working.example.com",
-  "jira_base_url": "https://*.atlassian.net/"
-};
 const drupalConfig = {
   statusField: {
     "ACTIVE": "1",
@@ -36,4 +31,4 @@ const utils = {
     );
   }
 }
-export { jiraConfig, utils };
+export { utils };

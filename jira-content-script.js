@@ -1,6 +1,8 @@
 (async () => {
-    const src = chrome.runtime.getURL("common.js");
-    const { jiraConfig, utils } = await import(src);
+    let src = chrome.runtime.getURL("config.js");
+    const { jiraConfig } = await import(src);
+    src = chrome.runtime.getURL("common.js");
+    const { utils } = await import(src);
 
     //.aui-header-primary .aui-nav
     document.querySelectorAll('#ak-jira-navigation').forEach(function (el){

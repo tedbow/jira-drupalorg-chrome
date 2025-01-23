@@ -24,7 +24,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [ "common.js", "jira-content-script.js" ],
+      "resources": [ "common.js", "jira-content-script.js", "config.js" ],
       "matches": [ "https://*.atlassian.net/*", "https://www.drupal.org/*"]
     }
   ],
