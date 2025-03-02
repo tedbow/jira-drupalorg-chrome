@@ -4,10 +4,10 @@
   src = chrome.runtime.getURL("common.js");
   const { utils } = await import(src);
 
-
-  var tabs = document.getElementById("tabs");
   var issueIds = [];
   var pageIssueId;
+  var url = document.URL;
+
   function createPlaceHolder(issueId) {
     var div = document.createElement("div");
     div.className = `jira-issue jira-issue-${issueId}`;
@@ -15,23 +15,32 @@
     return div;
   }
 
-// Add placeholder for tabs section
-  if (tabs) {
-    var tabLists = tabs.getElementsByTagName("ul");
-    if (tabLists) {
-      var tabList = tabLists.item(0);
-      var node = document.createElement("li");
-      var url = document.URL;
-      const regex =
-          /https:\/\/www\.drupal\.org\/project\/(automatic_updates|experience_builder)\/issues\/.*/g;
-      if (url.match(regex)) {
-        var issueId = utils.getIssueIdFromUrl(url);
-        pageIssueId = issueId;
-        issueIds.push(issueId);
-        node.appendChild(createPlaceHolder(issueId));
-        tabList.appendChild(node);
-      }
-    }
+// Add placeholder for message div on issue page
+  const regex =
+      /https:\/\/www\.drupal\.org\/project\/(automatic_updates|experience_builder)\/issues\/.*/g;
+  if (url.match(regex)) {
+    var issueId = utils.getIssueIdFromUrl(url);
+    pageIssueId = issueId;
+    issueIds.push(issueId);
+
+    let messageDiv = document.createElement("div");
+    messageDiv.id = "jira-issue-message";
+    messageDiv.className = `messages jira-issue jira-issue-${issueId}`;
+
+    // Create the placeholder link
+    let link;
+    link = document.createElement("a");
+    link.setAttribute("href", jiraConfig.jira_create_url);
+    link.title = "Create a Jira issue for this drupal.org issue";
+    link.innerText = "⏱";
+
+    // Add the link to the message div
+    messageDiv.appendChild(link);
+
+    // Insert the new div after any other messages, right before the #content-inner div
+    const parentElement = document.querySelector("#content");
+    const referenceElement = document.querySelector("#content-inner");
+    parentElement.insertBefore(messageDiv, referenceElement);
   }
   var links = document.querySelectorAll("a");
 
