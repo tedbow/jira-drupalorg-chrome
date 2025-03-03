@@ -67,10 +67,6 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
         return 'phenaproxima';
       case '3685174':
         return 'yash.rode';
-      case '3688861':
-        return 'Theresa.Grannum';
-      case '3685158':
-        return 'omkarpodey';
       case '240860':
         return 'tedbow';
       default:
