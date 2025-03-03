@@ -23,7 +23,7 @@
       var node = document.createElement("li");
       var url = document.URL;
       const regex =
-          /https:\/\/www\.drupal\.org\/project\/automatic_updates\/issues\/.*/g;
+          /https:\/\/www\.drupal\.org\/project\/(automatic_updates|experience_builder)\/issues\/.*/g;
       if (url.match(regex)) {
         var issueId = utils.getIssueIdFromUrl(url);
         pageIssueId = issueId;
