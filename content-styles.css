@@ -13,38 +13,6 @@ div.jira-issue a {
   text-decoration: none !important;
   border: 1px solid;
   background-color: white;
-  padding: 0 2px;
-  display: inline-block;
-  position: absolute;
-  left: -110px;
-  top: 0px;
-  max-width: 100px;
-  min-width: 100px;
-  height: -webkit-fill-available;
-}
-div.jira-issue a:before {
-  width: 16px;
-  background-image: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clip0_2967_1690"><rect width="24" height="24" fill="white"/></clipPath></defs><g clip-path="url(%23clip0_2967_1690)"><path d="M19.9721 3.40039H10.1797C10.1797 5.79593 12.1608 7.74579 14.5948 7.74579H16.4061V9.44496C16.4061 11.8405 18.3872 13.7904 20.8212 13.7904V4.23605C20.8212 3.76251 20.4533 3.40039 19.9721 3.40039Z" fill="%231868DB"></path><path d="M15.1323 8.19141H5.33984C5.33984 10.5869 7.32098 12.5368 9.75494 12.5368H11.5663V14.2638C11.5663 16.6594 13.5474 18.6092 15.9814 18.6092V9.02706C15.9814 8.58138 15.6134 8.19141 15.1323 8.19141Z" fill="%231868DB"></path><path d="M10.2925 13.0107H0.5C0.5 15.4063 2.48113 17.3561 4.91509 17.3561H6.72641V19.0553C6.72641 21.4509 8.70755 23.4007 11.1415 23.4007V13.8464C11.1415 13.3729 10.7453 13.0107 10.2925 13.0107Z" fill="%231868DB"></path></g></svg>');
-  background-position: 8px;
-  background-repeat: no-repeat;
-  position: absolute;
-  left: -16px;
-  top: -6px;
-  height: 20px;
-}
-div.jira-issue-create a {
-  /* Matches the red used by `.marker` on d.o. */
-  color: #f00 !important;
-}
-div.jira-issue.jira-status-open:not(.jira-issue-assigned) a {
-  color: gray;
-  opacity: 0.8;
-}
-div.jira-issue.jira-status-closed a {
-  /* Matches the "Fixed issue" border color on d.o. */
-  background-color: #d7ffd8;
-  border-color: #a8ff98;
-  border-width: 3px;
 }
 #drupal-org-trigger {
   cursor: pointer;
