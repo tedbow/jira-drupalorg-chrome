@@ -72,6 +72,7 @@
           .querySelectorAll(".jira-issue:not(.jira-issue-found)")
           .forEach(function (div) {
             div.className += " jira-issue-found";
+            div.className += " jira-issue-create";
             div.innerText = "";
             link = document.createElement("a");
             link.setAttribute("href", jiraConfig.jira_create_url);
@@ -98,16 +99,17 @@
     var divs = document.getElementsByClassName(`jira-issue-${issueId}`);
     [].forEach.call(divs, function (div) {
       div.className += " jira-issue-found";
+      let normalizedStatus = jiraIssue.status.toLowerCase().replace(/ /g, '_');
+      div.className += ` jira-status-${normalizedStatus}`;
       let link = document.createElement("a");
       link.setAttribute("href", jiraIssue.url);
       link.title = "Open in Jira";
-      link.innerText = `Jira: ${jiraIssue.key}`;
-      if (jiraIssue.assigned) {
-        link.innerText += ` - assigned ${jiraIssue.assigned.displayName}`;
-      } else {
-        link.innerText += ` - unassigned`;
+      link.innerHTML = `${jiraIssue.key}<br>`;
+      link.innerHTML += jiraIssue.status;
+      if (normalizedStatus != "closed" && jiraIssue.assigned) {
+        div.className += " jira-issue-assigned";
+        link.innerHTML += ` <mark>${jiraIssue.assigned.displayName}</mark>`;
       }
-      link.innerText += ` - ${jiraIssue.status}`;
       div.innerText = "";
       div.appendChild(link);
     });
