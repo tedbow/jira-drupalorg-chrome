@@ -16,6 +16,15 @@
     return;
   }
 
+  // Enable/disable this feature in `config.js`.
+  if (
+    jiraConfig &&
+    jiraConfig.hasOwnProperty('enable_drupalorg_enhancements') &&
+    jiraConfig.enable_drupalorg_enhancements === false
+  ) {
+    return;
+  }
+
   const { utils } = await import(commonSrc);
 
   var issueIds = [];
