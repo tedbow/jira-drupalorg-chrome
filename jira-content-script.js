@@ -16,6 +16,15 @@
       return;
     }
 
+    // Enable/disable this feature in `config.js`.
+    if (
+      jiraConfig &&
+      jiraConfig.hasOwnProperty('enable_jira_enhancements')
+      && jiraConfig.enable_jira_enhancements === false
+    ) {
+      return;
+    }
+
     const { utils } = await import(commonSrc);
 
     //.aui-header-primary .aui-nav
