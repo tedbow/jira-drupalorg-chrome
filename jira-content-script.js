@@ -25,11 +25,31 @@
         triggerElement.innerText = '💧⏱....'
         document.querySelectorAll('.drupal-issue-link').forEach(el => el.remove());
         let ids = [];
-        document.querySelectorAll('div[data-issue-id]').forEach(function (div) {
-            ids.push(div.getAttribute('data-issue-id'));
+        
+        //This is for the listing page
+        document.querySelectorAll('a[data-testid="native-issue-table.common.ui.issue-cells.issue-key.issue-key-cell"]').forEach(function (div) {
+            jiraid = div.getAttribute('href').replace('/browse/','')
+            ids.push(jiraid);
+            div.setAttribute("data-issue-id", jiraid);
         });
+
+        //This is for the sprint page
+        document.querySelectorAll('div[data-testid="platform-card.common.ui.key.key"] > div > a').forEach(function (div) {
+            jiraid = div.getAttribute('href').replace('/browse/','')
+            ids.push(jiraid);
+            div.setAttribute("data-issue-id", jiraid);
+        });
+
+        //This is for the issue page on JIRA
+        document.querySelectorAll('a[data-testid="issue.views.issue-base.foundation.breadcrumbs.current-issue.item"]').forEach(function (div) {
+            jiraid = div.getAttribute('href').replace('/browse/','')
+            ids.push(jiraid);
+            div.setAttribute("data-issue-id", jiraid);
+        });
+        
+
         function createDrupalLink(issue) {
-            document.querySelectorAll(`div[data-issue-id="${issue.id}"]`).forEach(function (div) {
+            document.querySelectorAll(`a[data-issue-id="${issue.key}"]`).forEach(function (div) {
                 if (issue.drupalUrl) {
                     let link = document.createElement("a");
                     link.className = 'drupal-issue-link';
