@@ -5,14 +5,16 @@ import { jiraConfig } from "./config.js";
 function findDrupalIssueId(issue) {
   let description = issue.fields.description;
   const regex = /https:\/\/www\.drupal\.org\/project\/.*\/issues\/\d*/g;
-  let matches = description.match(regex);
+  if (description) {
+    let matches = description.match(regex);
 
-  if (matches && matches.length > 0) {
-    let issueId;
-    matches.forEach(function (match) {
-      issueId = utils.getIssueIdFromUrl(match);
-    });
-    return issueId;
+    if (matches && matches.length > 0) {
+      let issueId;
+      matches.forEach(function (match) {
+        issueId = utils.getIssueIdFromUrl(match);
+      });
+      return issueId;
+    }
   }
 }
 
@@ -75,6 +77,10 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
         return 'yash.rode';
       case '240860':
         return 'tedbow';
+      case '99777':
+        return 'wim-leers';
+      case '246492':
+        return 'longwave';
       default:
         return 'Other';
     }
