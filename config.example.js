@@ -4,6 +4,8 @@
 const jiraConfig = {
     "jira_create_url":
         "https://my-domain.atlassian.net/secure/CloneIssueDetails!default.jspa?id=12345",
-    "jira_base_url": "https://my-domain.atlassian.net/"
+    "jira_base_url": "https://my-domain.atlassian.net/",
+    "show_sprint_value": 0; //set this to true if you want to show sprint as well
+    "sprint_custom_field_id": "customfield_xxxxx"; //set this value to your custom field value from JIRA
 };
 export { jiraConfig };

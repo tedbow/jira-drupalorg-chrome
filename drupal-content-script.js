@@ -108,6 +108,9 @@
         link.innerText += ` - unassigned`;
       }
       link.innerText += ` - ${jiraIssue.status}`;
+      if (jiraIssue.sprint) {
+        link.innerText += ` #### ${jiraIssue.sprint}`;  
+      }
       div.innerText = "";
       div.appendChild(link);
     });

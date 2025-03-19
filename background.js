@@ -34,6 +34,12 @@ function parseJiraIssuesJson(text) {
       newIssue.key = issue.key;
       newIssue.assigned = issue.fields.assignee;
       newIssue.status = issue.fields.status.name;
+      newIssue.sprint = "";
+      if (jiraConfig.show_sprint_value) { 
+        if (issue['fields'][jiraConfig.sprint_custom_field_id]) {
+          newIssue.sprint = issue['fields'][jiraConfig.sprint_custom_field_id][0].name;
+        }
+      }
       const drupalId = findDrupalIssueId(issue);
       if (drupalId) {
         newIssue.drupalIssueId = drupalId;
