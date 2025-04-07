@@ -31,12 +31,11 @@
         color: #0074bd;
     `;
     closeLink.onclick = function() {
-        document.body.style.paddingTop = `${parseInt(originalBodyPadding || 0)}px`;
         topContainer.remove();
         document.querySelectorAll('#drupal-org-persistent-container').forEach(el => el.remove());
     }
     topContainer.appendChild(closeLink);
-    
+
     // Create the drupal.org link
     const link = document.createElement('div');
     link.innerText = "drupal.org";
@@ -57,10 +56,6 @@
 
     // Add the container to the document body
     document.body.prepend(topContainer);
-
-    // Add padding to the top of the body to prevent content from being hidden
-    const originalBodyPadding = window.getComputedStyle(document.body).paddingTop;
-    document.body.style.paddingTop = `${parseInt(originalBodyPadding || 0) + topContainer.offsetHeight}px`;
 
     function triggerDrupalIntegration() {
         const triggerElement = document.getElementById('drupal-org-trigger');
