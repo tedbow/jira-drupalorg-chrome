@@ -1,8 +1,31 @@
 (async () => {
-    let src = chrome.runtime.getURL("config.js");
-    const { jiraConfig } = await import(src);
-    src = chrome.runtime.getURL("common.js");
-    const { utils } = await import(src);
+    let configSrc = chrome.runtime.getURL("config.js");
+    let commonSrc = chrome.runtime.getURL("common.js");
+
+    let jiraConfig = {};
+
+    try {
+      ({ jiraConfig } = await import(configSrc));
+    } catch (error) {
+      console.error(`Failed to import '${configSrc}': ${error.message}`);
+      if (error.message.includes("Failed to fetch dynamically imported module")) {
+        console.error(
+          "Config file 'config.js' not found in jira-drupalorg-chrome extension. See 'config.example.js' in its root directory for instructions for creating one."
+        );
+      }
+      return;
+    }
+
+    // Enable/disable this feature in `config.js`.
+    if (
+      jiraConfig &&
+      jiraConfig.hasOwnProperty('enable_jira_enhancements')
+      && jiraConfig.enable_jira_enhancements === false
+    ) {
+      return;
+    }
+
+    const { utils } = await import(commonSrc);
 
     // Create a fixed position container at the top of the page
     const topContainer = document.createElement('div');
