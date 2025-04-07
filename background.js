@@ -86,14 +86,30 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
     }
   }
 
+  // @todo Dynamically get tags names but also store locally to avoid calls every time
+  //   or add this config.js property.
+  const knownTags = {
+    "31228": 'Sprint',
+    "192148": 'stable blocker',
+    "345": "Needs tests",
+  }
   return jiraIssues.map(jiraIssue => {
    if(jiraIssue.hasOwnProperty('drupalIssueId')) {
      drupalOrgIssues.every(drupalOrgIssue => {
        if (drupalOrgIssue.nid === jiraIssue.drupalIssueId) {
+         jiraIssue.drupalOrgTags = [];
          // convert to text.
          jiraIssue.drupalStatus = utils.getStatusForId(drupalOrgIssue.field_issue_status);
          if (drupalOrgIssue.hasOwnProperty('field_issue_assigned') && drupalOrgIssue.field_issue_assigned.hasOwnProperty('id')) {
            jiraIssue.drupalUserName = getDrupalUserNameForUid(drupalOrgIssue.field_issue_assigned.id);
+         }
+         if (drupalOrgIssue.hasOwnProperty('taxonomy_vocabulary_9')) {
+
+           drupalOrgIssue.taxonomy_vocabulary_9.forEach(function (tag) {
+             if (knownTags.hasOwnProperty(tag.id)) {
+               jiraIssue.drupalOrgTags.push(knownTags[tag.id]);
+             }
+           })
          }
          return false;
        }

@@ -101,7 +101,27 @@
                     if(issue.hasOwnProperty('drupalStatus')) {
                         link.innerText += `: ${issue.drupalStatus}`;
                     }
+                    if (issue.hasOwnProperty('drupalOrgTags') && Array.isArray(issue.drupalOrgTags)) {
+                        const tags = document.createElement("ul");
+                        tags.className = 'drupal-issue-tags';
+                        // If "Sprint" is not in tags make it clear.
+                        if (!issue.drupalOrgTags.includes("Sprint")) {
+                            const li = document.createElement("li");
+                            li.innerText = "NOT Tagged Sprint";
+                            li.style.color = "red";
+                            tags.appendChild(li);
+                        }
+                        issue.drupalOrgTags.forEach(function (tag) {
+                            const li = document.createElement("li");
+                            li.innerText = tag;
+                            tags.appendChild(li);
+                        });
+                        div.after(tags);
+
+                    }
                     div.after(link);
+
+
                 }
 
             });
