@@ -4,19 +4,63 @@
     src = chrome.runtime.getURL("common.js");
     const { utils } = await import(src);
 
-    //.aui-header-primary .aui-nav
-    document.querySelectorAll('#ak-jira-navigation').forEach(function (el){
-        const link = document.createElement('div');
-        //link.setAttribute('href', '*');
-        link.innerText = "drupal.org";
-        link.id = "drupal-org-trigger"
-        link.className = 'drupal-trigger-active'
-        link.onclick = function() {triggerDrupalIntegration()};
-        const divE = document.createElement('div');
-        divE.appendChild(link);
-        el.appendChild(divE);
-    });
+    // Create a fixed position container at the top of the page
+    const topContainer = document.createElement('div');
+    topContainer.id = 'drupal-org-persistent-container';
+    topContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100px;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+        padding: 5px 10px;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        height: 30px;
+    `;
 
+    // Add a link to #drupal-org-persistent-container that will remove the element.
+    const closeLink = document.createElement('a');
+    closeLink.innerText = "X";
+    closeLink.style.cssText = `
+        cursor: pointer;
+        margin-left: auto;
+        font-weight: bold;
+        color: #0074bd;
+    `;
+    closeLink.onclick = function() {
+        document.body.style.paddingTop = `${parseInt(originalBodyPadding || 0)}px`;
+        topContainer.remove();
+        document.querySelectorAll('#drupal-org-persistent-container').forEach(el => el.remove());
+    }
+    topContainer.appendChild(closeLink);
+    
+    // Create the drupal.org link
+    const link = document.createElement('div');
+    link.innerText = "drupal.org";
+    link.id = "drupal-org-trigger";
+    link.className = 'drupal-trigger-active';
+    link.style.cssText = `
+        cursor: pointer;
+        padding: 3px 10px;
+        border-radius: 3px;
+        background-color: #0074bd;
+        color: white;
+        font-weight: bold;
+    `;
+    link.onclick = function() {triggerDrupalIntegration()};
+
+    // Add the link to the container
+    topContainer.appendChild(link);
+
+    // Add the container to the document body
+    document.body.prepend(topContainer);
+
+    // Add padding to the top of the body to prevent content from being hidden
+    const originalBodyPadding = window.getComputedStyle(document.body).paddingTop;
+    document.body.style.paddingTop = `${parseInt(originalBodyPadding || 0) + topContainer.offsetHeight}px`;
 
     function triggerDrupalIntegration() {
         const triggerElement = document.getElementById('drupal-org-trigger');
