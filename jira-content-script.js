@@ -118,10 +118,61 @@
                             li.innerText = tag;
                             tags.appendChild(li);
                         });
-                        div.after(tags);
+                        // Create a container for the tags
+                        const tagsContainer = document.createElement("div");
+                        tagsContainer.className = 'drupal-issue-tags-container';
+                        tagsContainer.style.cssText = `
+                            clear: both;
+                            margin: 5px 0;
+                            width: 100%;
+                        `;
+                        tagsContainer.appendChild(tags);
+                        // Try to find suitable parent for insertion that can accommodate wider elements
+                        let targetElement = div;
+                        // Try to find a parent with enough width, go up to 3 levels
+                        for (let i = 0; i < 3; i++) {
+                            if (targetElement.parentElement) {
+                                targetElement = targetElement.parentElement;
+                            } else {
+                                break;
+                            }
+                        }
+                        
+                        // Insert after the target element
+                        if (targetElement.nextSibling) {
+                            targetElement.parentNode.insertBefore(tagsContainer, targetElement.nextSibling);
+                        } else {
+                            targetElement.parentNode.appendChild(tagsContainer);
+                        }
 
                     }
-                    div.after(link);
+                    // Create a container for the link to ensure it has enough space
+                    const linkContainer = document.createElement("div");
+                    linkContainer.className = 'drupal-issue-link-container';
+                    linkContainer.style.cssText = `
+                        clear: both;
+                        margin: 5px 0;
+                        min-height: 22px;
+                        width: 100%;
+                    `;
+                    linkContainer.appendChild(link);
+                    // Try to find suitable parent for insertion that can accommodate wider elements
+                    let targetElement = div;
+                    // Try to find a parent with enough width, go up to 3 levels
+                    for (let i = 0; i < 3; i++) {
+                        if (targetElement.parentElement) {
+                            targetElement = targetElement.parentElement;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    // Insert after the target element
+                    if (targetElement.nextSibling) {
+                        targetElement.parentNode.insertBefore(linkContainer, targetElement.nextSibling);
+                    } else {
+                        targetElement.parentNode.appendChild(linkContainer);
+                    }
 
 
                 }
