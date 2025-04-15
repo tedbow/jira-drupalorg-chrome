@@ -95,6 +95,8 @@
                     link.setAttribute("href", issue.drupalUrl);
                     link.title = "Open on Drupal.org";
                     link.innerText = `💧`;
+                    // Open the link in new tab.
+                    link.setAttribute("target", "_blank");
                     if(issue.hasOwnProperty('drupalUserName')) {
                         link.innerText += `: ${issue.drupalUserName}`;
                     }
