@@ -22,3 +22,34 @@ function setPageBackgroundColor() {
     document.body.style.backgroundColor = color;
   });
 }
+
+// Handle Drupal username cache clearing
+document.addEventListener('DOMContentLoaded', function() {
+  const clearCacheButton = document.getElementById('clearDrupalCache');
+  const resultElement = document.getElementById('clearCacheResult');
+  
+  clearCacheButton.addEventListener('click', async () => {
+    try {
+      // Send message to background script to clear cache
+      const result = await chrome.runtime.sendMessage({
+        call: "clearDrupalUserCache"
+      });
+      
+      if (result.success) {
+        resultElement.textContent = `Success! ${result.count} cached username(s) cleared.`;
+        resultElement.style.color = 'green';
+        
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+          resultElement.textContent = '';
+        }, 3000);
+      } else {
+        resultElement.textContent = `Error: ${result.error}`;
+        resultElement.style.color = 'red';
+      }
+    } catch (error) {
+      resultElement.textContent = `Error: ${error.message}`;
+      resultElement.style.color = 'red';
+    }
+  });
+});

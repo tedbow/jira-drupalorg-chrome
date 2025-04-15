@@ -2,9 +2,27 @@
 <html>
   <head>
     <link rel="stylesheet" href="button.css" />
+    <style>
+      .settings-section {
+        margin-top: 20px;
+        padding-top: 10px;
+        border-top: 1px solid #ccc;
+      }
+      #clearCacheResult {
+        font-size: 12px;
+        margin-top: 5px;
+        color: green;
+      }
+    </style>
   </head>
   <body>
     <button id="changeColor"></button>
+    
+    <div class="settings-section">
+      <button id="clearDrupalCache">Clear Drupal Username Cache</button>
+      <div id="clearCacheResult"></div>
+    </div>
+    
     <script src="popup.js"></script>
   </body>
 </html>

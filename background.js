@@ -64,28 +64,60 @@ function fetchJson(url, parser, sendResponse) {
       // @todo handle error.
       .catch((error) => sendResponse({ farewell: error }));
 }
-function combineDrupalJira(drupalOrgIssues, jiraIssues) {
-
-  // @todo Dynamically request user via json.
-  function getDrupalUserNameForUid(id) {
-    switch (id) {
-      case '3685163':
-        return 'kunal.sachdev';
-      case '205645':
-        return 'phenaproxima';
-      case '3685174':
-        return 'yash.rode';
-      case '240860':
-        return 'tedbow';
-      case '99777':
-        return 'wim-leers';
-      case '246492':
-        return 'longwave';
-      default:
-        return 'Other';
+// Get username from cached data or fetch from API.
+async function getDrupalUserNameForUid(id) {
+    // Check if we have a cached version
+    const cacheKey = `drupal_user_${id}`;
+    const cacheData = await chrome.storage.local.get(cacheKey);
+    
+    if (cacheData[cacheKey]) {
+      const userData = cacheData[cacheKey];
+      const cacheExpiry = userData.timestamp + (jiraConfig.drupal_user_cache_days || 7) * 24 * 60 * 60 * 1000;
+      
+      // Return cached data if not expired
+      if (Date.now() < cacheExpiry) {
+        return userData.username;
+      }
+    }
+    
+    // Fetch fresh data from API
+    try {
+      const response = await fetch(`https://www.drupal.org/api-d7/user/${id}.json`);
+      const userData = await response.json();
+      
+      // Cache the result
+      const cacheObject = {};
+      cacheObject[cacheKey] = {
+        username: userData.name,
+        timestamp: Date.now()
+      };
+      
+      await chrome.storage.local.set(cacheObject);
+      return userData.name;
+    } catch (error) {
+      console.error(`Failed to fetch username for user ID ${id}:`, error);
+      return 'Unknown';
     }
   }
 
+// Function to clear username cache
+async function clearDrupalUserCache() {
+  try {
+    const allStorage = await chrome.storage.local.get(null);
+    const userCacheKeys = Object.keys(allStorage).filter(key => key.startsWith('drupal_user_'));
+    
+    if (userCacheKeys.length > 0) {
+      await chrome.storage.local.remove(userCacheKeys);
+      return { success: true, count: userCacheKeys.length };
+    }
+    return { success: true, count: 0 };
+  } catch (error) {
+    console.error('Error clearing Drupal user cache:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function combineDrupalJira(drupalOrgIssues, jiraIssues) {
   // @todo Dynamically get tags names but also store locally to avoid calls every time
   //   or add this config.js property.
   const knownTags = {
@@ -101,7 +133,9 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
          // convert to text.
          jiraIssue.drupalStatus = utils.getStatusForId(drupalOrgIssue.field_issue_status);
          if (drupalOrgIssue.hasOwnProperty('field_issue_assigned') && drupalOrgIssue.field_issue_assigned.hasOwnProperty('id')) {
-           jiraIssue.drupalUserName = getDrupalUserNameForUid(drupalOrgIssue.field_issue_assigned.id);
+           // Store the user ID first, then we'll process usernames later
+           jiraIssue.drupalUserId = drupalOrgIssue.field_issue_assigned.id;
+           jiraIssue.drupalUserName = 'Loading...';
          }
          if (drupalOrgIssue.hasOwnProperty('taxonomy_vocabulary_9')) {
 
@@ -126,6 +160,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       ? "from a content script:" + sender.tab.url
       : "from the extension"
   );
+  
+  if (request.call === "clearDrupalUserCache") {
+    clearDrupalUserCache().then(result => {
+      sendResponse(result);
+    });
+    return true; // Will respond asynchronously
+  }
+  
   let url = `${jiraConfig.jira_base_url}rest/api/2/search?jql=`;
   if (request.call === "fetchJIraIssuesByDrupalIds") {
     let searchFragments = [];
@@ -177,6 +219,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         .then(
             (drupalIssues => combineDrupalJira(drupalIssues, jiraIssues))
         )
+        .then(async (issues) => {
+          // Process usernames asynchronously
+          const issuesWithUserNames = [...issues];
+          for (const issue of issuesWithUserNames) {
+            if (issue.hasOwnProperty('drupalUserId')) {
+              try {
+                issue.drupalUserName = await getDrupalUserNameForUid(issue.drupalUserId);
+              } catch (error) {
+                console.error('Error fetching username:', error);
+              }
+            }
+          }
+          return issuesWithUserNames;
+        })
         .then((issues) => sendResponse({issues: issues}));
     return true;
   }
