@@ -94,15 +94,57 @@
                     link.className = 'drupal-issue-link';
                     link.setAttribute("href", issue.drupalUrl);
                     link.title = "Open on Drupal.org";
-                    link.innerText = `💧`;
                     // Open the link in new tab.
                     link.setAttribute("target", "_blank");
+                    
+                    // Create a container to hold all the content with proper styling
+                    const linkContent = document.createElement('div');
+                    linkContent.style.cssText = `
+                        display: inline-block;
+                        white-space: nowrap;
+                    `;
+                    
+                    // Add the droplet icon
+                    const icon = document.createElement('span');
+                    icon.innerText = '💧';
+                    linkContent.appendChild(icon);
+                    
+                    // Add username with special styling for unassigned
                     if(issue.hasOwnProperty('drupalUserName')) {
-                        link.innerText += `: ${issue.drupalUserName}`;
+                        const separator = document.createElement('span');
+                        separator.innerText = ': ';
+                        linkContent.appendChild(separator);
+                        
+                        const username = document.createElement('span');
+                        if (issue.drupalUserName === '(UNASSIGNED)') {
+                            username.innerText = issue.drupalUserName;
+                            username.style.cssText = `
+                                color: #d04437;
+                                font-weight: bold;
+                                background-color: rgba(255, 235, 230, 0.7);
+                                padding: 0 3px;
+                                border-radius: 3px;
+                                display: inline-block;
+                            `;
+                        } else {
+                            username.innerText = issue.drupalUserName;
+                        }
+                        linkContent.appendChild(username);
                     }
+                    
+                    // Add status if available
                     if(issue.hasOwnProperty('drupalStatus')) {
-                        link.innerText += `: ${issue.drupalStatus}`;
+                        const statusSeparator = document.createElement('span');
+                        statusSeparator.innerText = ': ';
+                        linkContent.appendChild(statusSeparator);
+                        
+                        const status = document.createElement('span');
+                        status.innerText = issue.drupalStatus;
+                        linkContent.appendChild(status);
                     }
+                    
+                    // Add the content to the link
+                    link.appendChild(linkContent);
                     if (issue.hasOwnProperty('drupalOrgTags') && Array.isArray(issue.drupalOrgTags)) {
                         const tags = document.createElement("ul");
                         tags.className = 'drupal-issue-tags';

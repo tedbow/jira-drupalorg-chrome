@@ -136,6 +136,9 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
            // Store the user ID first, then we'll process usernames later
            jiraIssue.drupalUserId = drupalOrgIssue.field_issue_assigned.id;
            jiraIssue.drupalUserName = 'Loading...';
+         } else {
+           // Issue is unassigned
+           jiraIssue.drupalUserName = '(UNASSIGNED)';
          }
          if (drupalOrgIssue.hasOwnProperty('taxonomy_vocabulary_9')) {
 
