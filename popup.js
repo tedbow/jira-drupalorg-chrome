@@ -23,12 +23,14 @@ function setPageBackgroundColor() {
   });
 }
 
-// Handle Drupal username cache clearing
+// Handle cache clearing
 document.addEventListener('DOMContentLoaded', function() {
-  const clearCacheButton = document.getElementById('clearDrupalCache');
+  const clearDrupalCacheButton = document.getElementById('clearDrupalCache');
+  const clearTaxonomyCacheButton = document.getElementById('clearTaxonomyCache');
   const resultElement = document.getElementById('clearCacheResult');
   
-  clearCacheButton.addEventListener('click', async () => {
+  // Clear Drupal username cache
+  clearDrupalCacheButton.addEventListener('click', async () => {
     try {
       // Send message to background script to clear cache
       const result = await chrome.runtime.sendMessage({
@@ -37,6 +39,32 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (result.success) {
         resultElement.textContent = `Success! ${result.count} cached username(s) cleared.`;
+        resultElement.style.color = 'green';
+        
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+          resultElement.textContent = '';
+        }, 3000);
+      } else {
+        resultElement.textContent = `Error: ${result.error}`;
+        resultElement.style.color = 'red';
+      }
+    } catch (error) {
+      resultElement.textContent = `Error: ${error.message}`;
+      resultElement.style.color = 'red';
+    }
+  });
+  
+  // Clear taxonomy term cache
+  clearTaxonomyCacheButton.addEventListener('click', async () => {
+    try {
+      // Send message to background script to clear cache
+      const result = await chrome.runtime.sendMessage({
+        call: "clearTaxonomyTermCache"
+      });
+      
+      if (result.success) {
+        resultElement.textContent = `Success! ${result.count} cached taxonomy term(s) cleared.`;
         resultElement.style.color = 'green';
         
         // Hide the message after 3 seconds

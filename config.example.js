@@ -10,6 +10,7 @@ const jiraConfig = {
     "sprint_custom_field_id": "customfield_xxxxx", //set this value to your custom field value from JIRA
     
     // Drupal.org API configuration
-    "drupal_user_cache_days": 7 // Number of days to cache Drupal usernames (default is 7)
+    "drupal_user_cache_days": 7, // Number of days to cache Drupal usernames (default is 7)
+    "taxonomy_term_cache_days": 30 // Number of days to cache taxonomy terms (default is 30)
 };
 export { jiraConfig };

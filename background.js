@@ -117,9 +117,61 @@ async function clearDrupalUserCache() {
   }
 }
 
+// Get taxonomy term name from cached data or fetch from API
+async function getTaxonomyTermName(id) {
+  // Check if we have a cached version
+  const cacheKey = `taxonomy_term_${id}`;
+  const cacheData = await chrome.storage.local.get(cacheKey);
+  
+  if (cacheData[cacheKey]) {
+    const termData = cacheData[cacheKey];
+    const cacheExpiry = termData.timestamp + (jiraConfig.taxonomy_term_cache_days || 30) * 24 * 60 * 60 * 1000;
+    
+    // Return cached data if not expired
+    if (Date.now() < cacheExpiry) {
+      return termData.name;
+    }
+  }
+  
+  // Fetch fresh data from API
+  try {
+    const response = await fetch(`https://www.drupal.org/api-d7/taxonomy_term/${id}.json`);
+    const termData = await response.json();
+    
+    // Cache the result
+    const cacheObject = {};
+    cacheObject[cacheKey] = {
+      name: termData.name,
+      timestamp: Date.now()
+    };
+    
+    await chrome.storage.local.set(cacheObject);
+    return termData.name;
+  } catch (error) {
+    console.error(`Failed to fetch taxonomy term name for ID ${id}:`, error);
+    return `Unknown Tag (${id})`;
+  }
+}
+
+// Function to clear taxonomy term cache
+async function clearTaxonomyTermCache() {
+  try {
+    const allStorage = await chrome.storage.local.get(null);
+    const termCacheKeys = Object.keys(allStorage).filter(key => key.startsWith('taxonomy_term_'));
+    
+    if (termCacheKeys.length > 0) {
+      await chrome.storage.local.remove(termCacheKeys);
+      return { success: true, count: termCacheKeys.length };
+    }
+    return { success: true, count: 0 };
+  } catch (error) {
+    console.error('Error clearing taxonomy term cache:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 function combineDrupalJira(drupalOrgIssues, jiraIssues) {
-  // @todo Dynamically get tags names but also store locally to avoid calls every time
-  //   or add this config.js property.
+  // Initial known tags (fallback values)
   const knownTags = {
     "31228": 'Sprint',
     "192148": 'stable blocker',
@@ -141,12 +193,17 @@ function combineDrupalJira(drupalOrgIssues, jiraIssues) {
            jiraIssue.drupalUserName = '(UNASSIGNED)';
          }
          if (drupalOrgIssue.hasOwnProperty('taxonomy_vocabulary_9')) {
-
+           // Store tag IDs first, then we'll process tag names later
+           jiraIssue.drupalTagIds = [];
            drupalOrgIssue.taxonomy_vocabulary_9.forEach(function (tag) {
+             jiraIssue.drupalTagIds.push(tag.id);
+             // Use known tags as initial value while loading
              if (knownTags.hasOwnProperty(tag.id)) {
                jiraIssue.drupalOrgTags.push(knownTags[tag.id]);
+             } else {
+               jiraIssue.drupalOrgTags.push('Loading...');
              }
-           })
+           });
          }
          return false;
        }
@@ -166,6 +223,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   
   if (request.call === "clearDrupalUserCache") {
     clearDrupalUserCache().then(result => {
+      sendResponse(result);
+    });
+    return true; // Will respond asynchronously
+  }
+  
+  if (request.call === "clearTaxonomyTermCache") {
+    clearTaxonomyTermCache().then(result => {
       sendResponse(result);
     });
     return true; // Will respond asynchronously
@@ -223,9 +287,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             (drupalIssues => combineDrupalJira(drupalIssues, jiraIssues))
         )
         .then(async (issues) => {
-          // Process usernames asynchronously
-          const issuesWithUserNames = [...issues];
-          for (const issue of issuesWithUserNames) {
+          // Process usernames and taxonomy terms asynchronously
+          const processedIssues = [...issues];
+          for (const issue of processedIssues) {
+            // Process usernames
             if (issue.hasOwnProperty('drupalUserId')) {
               try {
                 issue.drupalUserName = await getDrupalUserNameForUid(issue.drupalUserId);
@@ -233,8 +298,29 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 console.error('Error fetching username:', error);
               }
             }
+            
+            // Process taxonomy terms
+            if (issue.hasOwnProperty('drupalTagIds') && issue.drupalTagIds.length > 0) {
+              // Create a copy of the tags array to update
+              const updatedTags = [...issue.drupalOrgTags];
+              
+              // Process each tag ID and update the corresponding tag in drupalOrgTags
+              for (let i = 0; i < issue.drupalTagIds.length; i++) {
+                const tagId = issue.drupalTagIds[i];
+                try {
+                  const tagName = await getTaxonomyTermName(tagId);
+                  // Update the tag name at the corresponding position
+                  updatedTags[i] = tagName;
+                } catch (error) {
+                  console.error(`Error fetching taxonomy term for ID ${tagId}:`, error);
+                }
+              }
+              
+              // Update the issue's tags array with the retrieved names
+              issue.drupalOrgTags = updatedTags;
+            }
           }
-          return issuesWithUserNames;
+          return processedIssues;
         })
         .then((issues) => sendResponse({issues: issues}));
     return true;
